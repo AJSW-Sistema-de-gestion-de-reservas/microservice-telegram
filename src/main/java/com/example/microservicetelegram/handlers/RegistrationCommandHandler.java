@@ -5,7 +5,6 @@ import com.example.microservicetelegram.services.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -14,18 +13,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.*;
 
-@Component
-public class RegistrationCommandHandler implements CommandHandler {
+public abstract class RegistrationCommandHandler implements CommandHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationCommandHandler.class);
 
-
-    private final ClientService clientService;
     private final Map<Long, RegistrationUserData> registrationUserDataMap;
 
     @Autowired
-    public RegistrationCommandHandler(ClientService clientService) {
-        this.clientService = clientService;
+    public RegistrationCommandHandler() {
         this.registrationUserDataMap = new HashMap<>();
     }
 
@@ -40,7 +35,7 @@ public class RegistrationCommandHandler implements CommandHandler {
         List<SendMessage> messageList = new ArrayList<>();
 
         if (!registrationUserDataMap.containsKey(chatId)) {
-            if (clientService.checkUserExists(chatId)) {
+            if (isUserRegistered(chatId)) {
                 SendMessage sendMessage = SendMessage.builder()
                         .chatId(chatId)
                         .text("Ya estás registrado!")
@@ -63,7 +58,7 @@ public class RegistrationCommandHandler implements CommandHandler {
 
         return messageList;
     }
-    
+
     private void handleStart(Update update, List<SendMessage> messageList, RegistrationUserData userData) {
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(update.getMessage().getChatId())
@@ -156,7 +151,7 @@ public class RegistrationCommandHandler implements CommandHandler {
         if (Objects.equals(callbackData, "y")) {
             LOGGER.info(userData.toString());
 
-            boolean result = clientService.register(chatId, userData.getUsername(), userData.getFirstName(), userData.getLastName());
+            boolean result = register(chatId, userData);
             SendMessage sendMessage;
             if (result) {
                 sendMessage = SendMessage.builder()
@@ -181,10 +176,12 @@ public class RegistrationCommandHandler implements CommandHandler {
         registrationUserDataMap.remove(chatId);
     }
 
+    abstract boolean isUserRegistered(long chatId);
+
+    abstract boolean register(long chatId, RegistrationUserData userData);
+
     @Override
-    public boolean canHandle(String command) {
-        return command.equals("/registro");
-    }
+    public abstract boolean canHandle(String command);
 
     @Override
     public boolean hasUserData(long chatId) {

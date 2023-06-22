@@ -1,6 +1,7 @@
 package com.example.microservicetelegram.services;
 
 import com.example.microservicetelegram.config.Endpoints;
+import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
 import com.example.microservicetelegram.dto.AccommodationInfoResponseDto;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AccommodationServiceImp implements AccommodationService {
@@ -24,7 +26,7 @@ public class AccommodationServiceImp implements AccommodationService {
     }
 
     @Override
-    public List<AccommodationInfoResponseDto> getBy(String city) {
+    public List<AccommodationInfoResponseDto> getAllBy(String city) {
         try {
             String urlTemplate = UriComponentsBuilder.fromHttpUrl(Endpoints.API_ACCOMMODATION_SEARCH)
                     .queryParam("city", "{city}")
@@ -46,6 +48,24 @@ public class AccommodationServiceImp implements AccommodationService {
             return response.getBody();
         } catch (HttpClientErrorException e) {
             return List.of();
+        }
+    }
+
+    @Override
+    public Optional<AccommodationDetailsResponseDto> getBy(String accommodationId) {
+        try {
+            ResponseEntity<AccommodationDetailsResponseDto> response = restTemplate.exchange(
+                    Endpoints.API_ACCOMMODATION_BY_ID + accommodationId,
+
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            return Optional.ofNullable(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return Optional.empty();
         }
     }
 }

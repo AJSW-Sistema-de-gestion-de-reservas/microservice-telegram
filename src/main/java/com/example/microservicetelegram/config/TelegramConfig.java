@@ -1,11 +1,9 @@
 package com.example.microservicetelegram.config;
 
-import com.example.microservicetelegram.handlers.ClientInfoCommandHandler;
-import com.example.microservicetelegram.handlers.CommandHandler;
-import com.example.microservicetelegram.handlers.RegistrationCommandHandler;
-import com.example.microservicetelegram.handlers.SearchCommandHandler;
+import com.example.microservicetelegram.handlers.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -22,14 +20,25 @@ public class TelegramConfig {
     }
 
     @Bean
-    public List<CommandHandler> commandsMap(RegistrationCommandHandler registration,
+    public List<CommandHandler> commandsMap(RegistrationClientCommandHandler registrationClient,
+                                            RegistrationOwnerCommandHandler registrationOwner,
                                             SearchCommandHandler search,
-                                            ClientInfoCommandHandler clientInfo) {
+                                            AccommodationDetailsCommandHandler accommodationDetails,
+                                            ClientInfoCommandHandler clientInfo,
+                                            BookingClientInfoCommandHandler bookingInfo) {
         List<CommandHandler> commands = new ArrayList<>();
-        commands.add(registration);
+        commands.add(registrationClient);
+        commands.add(registrationOwner);
         commands.add(search);
         commands.add(clientInfo);
+        commands.add(accommodationDetails);
+        commands.add(bookingInfo);
         return commands;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 }

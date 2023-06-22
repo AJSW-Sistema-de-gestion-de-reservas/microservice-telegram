@@ -1,8 +1,8 @@
 package com.example.microservicetelegram.services;
 
 import com.example.microservicetelegram.config.Endpoints;
-import com.example.microservicetelegram.dto.ClientCreationRequestDto;
-import com.example.microservicetelegram.dto.ClientInfoResponseDto;
+import com.example.microservicetelegram.dto.OwnerCreationRequestDto;
+import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,11 +13,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ClientServiceImp implements ClientService {
+public class OwnerServiceImp implements OwnerService {
 
     private final RestTemplate restTemplate;
 
-    public ClientServiceImp() {
+    public OwnerServiceImp() {
         this.restTemplate = new RestTemplate();
     }
 
@@ -26,14 +26,14 @@ public class ClientServiceImp implements ClientService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
-        ClientCreationRequestDto requestDto = ClientCreationRequestDto.builder()
+        OwnerCreationRequestDto requestDto = OwnerCreationRequestDto.builder()
                 .chatId(chatId)
                 .username(username)
                 .firstName(firstName)
                 .lastName(lastName)
                 .build();
 
-        HttpEntity<ClientCreationRequestDto> entity = new HttpEntity<>(requestDto, headers);
+        HttpEntity<OwnerCreationRequestDto> entity = new HttpEntity<>(requestDto, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
@@ -51,9 +51,9 @@ public class ClientServiceImp implements ClientService {
     }
 
     @Override
-    public ClientInfoResponseDto getInfo(long chatId) {
+    public OwnerInfoResponseDto getInfo(long chatId) {
         try {
-            ResponseEntity<ClientInfoResponseDto> response = restTemplate.exchange(
+            ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
                     Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,
                     HttpMethod.GET,
                     null,
@@ -69,7 +69,7 @@ public class ClientServiceImp implements ClientService {
 
     public boolean checkUserExists(long chatId) {
         try {
-            ResponseEntity<ClientInfoResponseDto> response = restTemplate.exchange(
+            ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
                     Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,
                     HttpMethod.GET,
                     null,
@@ -82,5 +82,4 @@ public class ClientServiceImp implements ClientService {
             return false;
         }
     }
-
 }
