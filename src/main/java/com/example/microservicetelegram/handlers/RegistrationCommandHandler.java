@@ -1,7 +1,6 @@
 package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.domain.RegistrationUserData;
-import com.example.microservicetelegram.services.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
