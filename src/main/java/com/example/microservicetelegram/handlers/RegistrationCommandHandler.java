@@ -134,7 +134,7 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
                         Por favor, comprobá que los datos ingresados son correctos:
                                                         
                         Nombre de usuario: %s
-                        Nombre: %s,
+                        Nombre: %s
                         Apellido: %s
                         """.formatted(userData.getUsername(), userData.getFirstName(), userData.getLastName()))
                 .build();

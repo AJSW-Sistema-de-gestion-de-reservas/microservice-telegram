@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccommodationService {
-    List<AccommodationInfoResponseDto> getAllBy(String city);
+    boolean create(long chatId, String name, String address, String city, String province, String postalCode);
 
-    Optional<AccommodationDetailsResponseDto> getBy(String accommodationId);
+    List<AccommodationInfoResponseDto> getAllByCity(String city);
+
+    List<AccommodationInfoResponseDto> getAllByOwner(long chatId);
+
+    Optional<AccommodationDetailsResponseDto> getById(String accommodationId);
 }

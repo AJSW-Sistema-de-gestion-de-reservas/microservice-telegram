@@ -174,11 +174,11 @@ public class BookingCreationCommandHandler implements CommandHandler {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(InlineKeyboardButton.builder()
-                .text("Cancel")
+                .text("Cancelar")
                 .callbackData(CALLBACK_DATA_CANCEL)
                 .build());
         row.add(InlineKeyboardButton.builder()
-                .text("Confirm")
+                .text("Confirmar")
                 .callbackData(CALLBACK_DATA_CONFIRM)
                 .build());
         keyboard.add(row);
@@ -225,7 +225,7 @@ public class BookingCreationCommandHandler implements CommandHandler {
         } else if (Objects.equals(callbackData, CALLBACK_DATA_CANCEL)) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("Reserva cancelada")
+                    .text("Creación de reserva cancelada")
                     .build();
             messageList.add(sendMessage);
         }

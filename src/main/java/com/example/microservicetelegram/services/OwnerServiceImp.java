@@ -39,7 +39,7 @@ public class OwnerServiceImp implements OwnerService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                    Endpoints.API_CLIENT_REGISTER,
+                    Endpoints.API_OWNER_REGISTER,
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<>() {
@@ -57,7 +57,7 @@ public class OwnerServiceImp implements OwnerService {
     public Optional<OwnerInfoResponseDto> getInfo(long chatId) {
         try {
             ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
-                    Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,
+                    Endpoints.API_OWNER_INFO_FROM_CHAT_ID + chatId,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<>() {
@@ -73,7 +73,7 @@ public class OwnerServiceImp implements OwnerService {
     public boolean existsByChatId(long chatId) {
         try {
             ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
-                    Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,
+                    Endpoints.API_OWNER_INFO_FROM_CHAT_ID + chatId,
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<>() {

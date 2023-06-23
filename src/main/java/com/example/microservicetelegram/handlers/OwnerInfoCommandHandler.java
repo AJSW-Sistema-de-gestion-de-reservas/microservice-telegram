@@ -48,7 +48,7 @@ public class OwnerInfoCommandHandler implements CommandHandler {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("No estás registrado como administrador de alojamientos. " +
-                            "Podés registrarte como administrador con el comando /registro")
+                            "Podés registrarte como administrador con el comando /registroadmin")
                     .build();
             messageList.add(sendMessage);
         }

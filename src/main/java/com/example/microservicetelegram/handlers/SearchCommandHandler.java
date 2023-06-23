@@ -78,7 +78,7 @@ public class SearchCommandHandler implements CommandHandler {
                 .build();
         messageList.add(sendMessage);
 
-        List<AccommodationInfoResponseDto> accommodations = accommodationService.getAllBy(city);
+        List<AccommodationInfoResponseDto> accommodations = accommodationService.getAllByCity(city);
 
         accommodations.forEach(a -> {
             SendMessage accommodationMessage = SendMessage.builder()

@@ -41,7 +41,7 @@ public class AccommodationDetailsCommandHandler implements CommandHandler {
         String text = update.getMessage().getText();
         String accommodationId = text.substring(text.indexOf("_") + 1).trim();
 
-        Optional<AccommodationDetailsResponseDto> result = accommodationService.getBy(accommodationId);
+        Optional<AccommodationDetailsResponseDto> result = accommodationService.getById(accommodationId);
         if (result.isEmpty()) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
