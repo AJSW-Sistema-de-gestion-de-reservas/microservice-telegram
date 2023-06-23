@@ -44,7 +44,6 @@ public class BookingServiceImp implements BookingService {
             headers.set("Content-Type", "application/json");
 
             BookingCreationRequestDto request = BookingCreationRequestDto.builder()
-                    .amount(0)
                     .clientId(clientInfo.get().getId())
                     .checkIn(checkIn)
                     .checkOut(checkOut)

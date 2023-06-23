@@ -8,7 +8,6 @@ import java.util.Date;
 @Builder
 @Data
 public class BookingCreationRequestDto {
-    private double amount;
     private Date checkIn;
     private Date checkOut;
     private String clientId;

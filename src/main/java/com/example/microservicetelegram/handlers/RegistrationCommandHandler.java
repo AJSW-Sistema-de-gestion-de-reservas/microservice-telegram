@@ -113,11 +113,11 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
         List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         InlineKeyboardButton buttonConfirm = InlineKeyboardButton.builder()
-                .text("Confirm")
+                .text("Confirmar")
                 .callbackData(CALLBACK_DATA_CONFIRM)
                 .build();
         InlineKeyboardButton buttonCancel = InlineKeyboardButton.builder()
-                .text("Cancel")
+                .text("Cancelar")
                 .callbackData(CALLBACK_DATA_CANCEL)
                 .build();
         row.add(buttonCancel);

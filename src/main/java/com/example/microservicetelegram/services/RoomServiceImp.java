@@ -1,8 +1,12 @@
 package com.example.microservicetelegram.services;
 
 import com.example.microservicetelegram.config.Endpoints;
+import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
+import com.example.microservicetelegram.dto.RoomCreationRequestDto;
 import com.example.microservicetelegram.dto.RoomInfoResponseDto;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,10 +22,52 @@ import java.util.Optional;
 @Service
 public class RoomServiceImp implements RoomService {
 
+    private final OwnerService ownerService;
+
     private final RestTemplate restTemplate;
 
-    public RoomServiceImp() {
+    public RoomServiceImp(OwnerService ownerService) {
+        this.ownerService = ownerService;
         this.restTemplate = new RestTemplate();
+    }
+
+    @Override
+    public boolean create(long chatId, String accommodationId, String name, int maxPeople, int quantity, double price) {
+        try {
+            Optional<OwnerInfoResponseDto> ownerInfo = ownerService.getInfo(chatId);
+            if (ownerInfo.isEmpty())
+                return false;
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+
+            RoomCreationRequestDto request = RoomCreationRequestDto.builder()
+                    .name(name)
+                    .maxPeople(maxPeople)
+                    .quantity(quantity)
+                    .price(price)
+                    .build();
+
+            HttpEntity<RoomCreationRequestDto> entity = new HttpEntity<>(request, headers);
+
+            UriTemplate uriTemplate = new UriTemplate(Endpoints.API_ROOM);
+            Map<String, String> pathVariables = new HashMap<>();
+            pathVariables.put("accommodationId", accommodationId);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uriTemplate.expand(pathVariables),
+                    HttpMethod.POST,
+                    entity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (HttpClientErrorException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
