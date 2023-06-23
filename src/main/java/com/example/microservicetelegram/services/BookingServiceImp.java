@@ -15,10 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BookingServiceImp implements BookingService {
@@ -34,7 +31,9 @@ public class BookingServiceImp implements BookingService {
     @Override
     public boolean book(long chatId, String accommodationId, String roomId, Date checkIn, Date checkOut) {
         try {
-            ClientInfoResponseDto clientInfo = clientService.getInfo(chatId);
+            Optional<ClientInfoResponseDto> clientInfo = clientService.getInfo(chatId);
+            if (clientInfo.isEmpty())
+                return false;
 
             UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_CREATE);
             Map<String, String> pathVariables = new HashMap<>();
@@ -46,7 +45,7 @@ public class BookingServiceImp implements BookingService {
 
             BookingCreationRequestDto request = BookingCreationRequestDto.builder()
                     .amount(0)
-                    .clientId(clientInfo.getId())
+                    .clientId(clientInfo.get().getId())
                     .checkIn(checkIn)
                     .checkOut(checkOut)
                     .build();
@@ -71,11 +70,13 @@ public class BookingServiceImp implements BookingService {
     @Override
     public List<BookingInfoResponseDto> getAllByChatId(long chatId) {
         try {
-            ClientInfoResponseDto clientInfo = clientService.getInfo(chatId);
+            Optional<ClientInfoResponseDto> clientInfo = clientService.getInfo(chatId);
+            if (clientInfo.isEmpty())
+                return List.of();
 
             UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_CLIENT);
             Map<String, String> pathVariables = new HashMap<>();
-            pathVariables.put("clientId", clientInfo.getId());
+            pathVariables.put("clientId", clientInfo.get().getId());
 
             ResponseEntity<List<BookingInfoResponseDto>> response = restTemplate.exchange(
                     uriTemplate.expand(pathVariables),

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Service
 public class OwnerServiceImp implements OwnerService {
 
@@ -52,7 +54,7 @@ public class OwnerServiceImp implements OwnerService {
     }
 
     @Override
-    public OwnerInfoResponseDto getInfo(long chatId) {
+    public Optional<OwnerInfoResponseDto> getInfo(long chatId) {
         try {
             ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
                     Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,
@@ -62,9 +64,9 @@ public class OwnerServiceImp implements OwnerService {
                     }
             );
 
-            return response.getBody();
+            return Optional.ofNullable(response.getBody());
         } catch (HttpClientErrorException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
