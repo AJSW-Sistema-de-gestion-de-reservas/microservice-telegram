@@ -2,6 +2,7 @@ package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.domain.BookingUserData;
 import com.example.microservicetelegram.services.BookingService;
+import com.example.microservicetelegram.services.ClientService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,13 @@ public class BookingCreationCommandHandler implements CommandHandler {
     private static final String CALLBACK_DATA_CANCEL = "N";
     private static final String CALLBACK_DATA_CONFIRM = "Y";
 
+    private final ClientService clientService;
     private final BookingService bookingService;
 
     private final Map<Long, BookingUserData> bookingUserDataMap;
 
-    public BookingCreationCommandHandler(BookingService bookingService) {
+    public BookingCreationCommandHandler(ClientService clientService, BookingService bookingService) {
+        this.clientService = clientService;
         this.bookingService = bookingService;
         this.bookingUserDataMap = new HashMap<>();
     }
@@ -40,8 +43,18 @@ public class BookingCreationCommandHandler implements CommandHandler {
         long chatId = (update.hasMessage()) ? update.getMessage().getChatId() :
                 update.getCallbackQuery().getMessage().getChatId();
 
-        if (!bookingUserDataMap.containsKey(chatId))
+        if (!bookingUserDataMap.containsKey(chatId)) {
+            if (!clientService.existsByChatId(chatId)) {
+                SendMessage sendMessage = SendMessage.builder()
+                        .chatId(chatId)
+                        .text("Tenés que estar registrado para poder realizar una reserva. " +
+                                "Registrate con el comando /registro")
+                        .build();
+                return List.of(sendMessage);
+            }
+
             bookingUserDataMap.put(chatId, new BookingUserData());
+        }
 
         List<SendMessage> messageList = new ArrayList<>();
         BookingUserData userData = bookingUserDataMap.get(chatId);

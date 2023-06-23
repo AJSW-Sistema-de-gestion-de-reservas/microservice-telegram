@@ -67,7 +67,7 @@ public class ClientServiceImp implements ClientService {
         }
     }
 
-    public boolean checkUserExists(long chatId) {
+    public boolean existsByChatId(long chatId) {
         try {
             ResponseEntity<ClientInfoResponseDto> response = restTemplate.exchange(
                     Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,

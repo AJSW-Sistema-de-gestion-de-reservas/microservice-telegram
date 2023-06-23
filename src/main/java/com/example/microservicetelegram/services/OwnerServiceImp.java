@@ -68,7 +68,7 @@ public class OwnerServiceImp implements OwnerService {
         }
     }
 
-    public boolean checkUserExists(long chatId) {
+    public boolean existsByChatId(long chatId) {
         try {
             ResponseEntity<OwnerInfoResponseDto> response = restTemplate.exchange(
                     Endpoints.API_CLIENT_INFO_FROM_CHAT_ID + chatId,

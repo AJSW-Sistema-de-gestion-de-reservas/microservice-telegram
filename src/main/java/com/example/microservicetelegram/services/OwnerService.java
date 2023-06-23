@@ -7,5 +7,5 @@ public interface OwnerService {
 
     OwnerInfoResponseDto getInfo(long chatId);
 
-    boolean checkUserExists(long chatId);
+    boolean existsByChatId(long chatId);
 }

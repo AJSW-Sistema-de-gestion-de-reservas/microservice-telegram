@@ -7,5 +7,5 @@ public interface ClientService {
 
     ClientInfoResponseDto getInfo(long chatId);
 
-    boolean checkUserExists(long chatId);
+    boolean existsByChatId(long chatId);
 }
