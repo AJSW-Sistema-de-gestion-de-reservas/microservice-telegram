@@ -2,10 +2,14 @@ package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.dto.BookingInfoResponseDto;
 import com.example.microservicetelegram.services.BookingService;
+import com.example.microservicetelegram.utils.TimeUtils;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,13 +37,20 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
                 .build();
         messageList.add(sendMessage);
 
-        List<BookingInfoResponseDto> bookings = bookingService.getAllByChatId(123123123L);
+        List<BookingInfoResponseDto> bookings = bookingService.getAllByChatId(chatId);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.from(ZoneOffset.UTC));
         bookings.forEach(b -> {
             SendMessage bookingMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("%s - %s\n\nAlojamiento: %s\nCreada el %s\nEstado: %s"
-                            .formatted(b.getCheckIn(), b.getCheckOut(), b.getAccommodationId(), b.getCreatedAt(), (b.isPaid()) ? "Confirmado" : "Pendiente"))
+                            .formatted(
+                                    formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckIn())),
+                                    formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckOut())),
+                                    b.getAccommodationId(),
+                                    b.getCreatedAt(),
+                                    (b.isPaid()) ? "Confirmado" : "Pendiente")
+                    )
                     .build();
             messageList.add(bookingMessage);
         });
