@@ -46,6 +46,7 @@ public class OwnerServiceImp implements OwnerService {
 
             return response.getStatusCode().is2xxSuccessful();
         } catch (HttpClientErrorException e) {
+            e.printStackTrace();
             return false;
         }
     }

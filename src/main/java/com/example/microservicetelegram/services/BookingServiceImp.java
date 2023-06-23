@@ -1,9 +1,12 @@
 package com.example.microservicetelegram.services;
 
 import com.example.microservicetelegram.config.Endpoints;
+import com.example.microservicetelegram.dto.BookingCreationRequestDto;
 import com.example.microservicetelegram.dto.BookingInfoResponseDto;
 import com.example.microservicetelegram.dto.ClientInfoResponseDto;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,43 @@ public class BookingServiceImp implements BookingService {
     public BookingServiceImp(ClientService clientService) {
         this.clientService = clientService;
         this.restTemplate = new RestTemplate();
+    }
+
+    @Override
+    public boolean book(long chatId, String accommodationId, String roomId, Date checkIn, Date checkOut) {
+        try {
+            ClientInfoResponseDto clientInfo = clientService.getInfo(chatId);
+
+            UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_CREATE);
+            Map<String, String> pathVariables = new HashMap<>();
+            pathVariables.put("accommodationId", accommodationId);
+            pathVariables.put("roomId", roomId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+
+            BookingCreationRequestDto request = BookingCreationRequestDto.builder()
+                    .amount(0)
+                    .clientId(clientInfo.getId())
+                    .checkIn(checkIn)
+                    .checkOut(checkOut)
+                    .build();
+
+            HttpEntity<BookingCreationRequestDto> entity = new HttpEntity<>(request, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uriTemplate.expand(pathVariables),
+                    HttpMethod.POST,
+                    entity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (HttpClientErrorException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

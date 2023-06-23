@@ -5,6 +5,5 @@ import com.example.microservicetelegram.dto.RoomInfoResponseDto;
 import java.util.Optional;
 
 public interface RoomService {
-    Optional<RoomInfoResponseDto> getRoomInfo(String accommodationId, String roomId);
-
+    Optional<RoomInfoResponseDto> getInfo(String accommodationId, String roomId);
 }
