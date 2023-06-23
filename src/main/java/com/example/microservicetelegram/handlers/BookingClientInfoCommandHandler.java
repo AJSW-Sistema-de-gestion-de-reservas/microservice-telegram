@@ -40,6 +40,16 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
                     .build();
             return List.of(sendMessage);
         }
+        
+        List<BookingInfoResponseDto> bookings = bookingService.getAllByChatId(chatId);
+
+        if (bookings.size() == 0) {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("No tenés reservas registradas")
+                    .build();
+            return List.of(sendMessage);
+        }
 
         List<SendMessage> messageList = new ArrayList<>();
         SendMessage sendMessage = SendMessage.builder()
@@ -47,8 +57,6 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
                 .text("Tus reservas son:")
                 .build();
         messageList.add(sendMessage);
-
-        List<BookingInfoResponseDto> bookings = bookingService.getAllByChatId(chatId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.from(ZoneOffset.UTC));
         bookings.forEach(b -> {
