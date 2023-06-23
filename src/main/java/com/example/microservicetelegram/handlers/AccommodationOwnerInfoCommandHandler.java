@@ -58,7 +58,14 @@ public class AccommodationOwnerInfoCommandHandler implements CommandHandler {
         accommodationsInfo.forEach(a -> {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("<b>%s</b>\n\n%s\n%s, %s".formatted(a.getName(), a.getAddress(), a.getCity(), a.getProvince()))
+                    .text(("""
+                            <b>%s</b>
+
+                            %s
+                            %s, %s
+
+                            Podés ver las habitaciones de este alojamiento con el comando /mishabitaciones_%s""")
+                            .formatted(a.getName(), a.getAddress(), a.getCity(), a.getProvince(), a.getId()))
                     .parseMode(HTML)
                     .build();
             messageList.add(sendMessage);

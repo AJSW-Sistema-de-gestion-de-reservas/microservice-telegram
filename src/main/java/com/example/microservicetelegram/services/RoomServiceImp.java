@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,7 +32,28 @@ public class RoomServiceImp implements RoomService {
             pathVariables.put("accommodationId", accommodationId);
             pathVariables.put("roomId", roomId);
 
-            ResponseEntity<Optional<RoomInfoResponseDto>> response = restTemplate.exchange(
+            ResponseEntity<RoomInfoResponseDto> response = restTemplate.exchange(
+                    uriTemplate.expand(pathVariables),
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            return Optional.ofNullable(response.getBody());
+        } catch (HttpClientErrorException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<RoomInfoResponseDto> getAllByAccommodation(String accommodationId) {
+        try {
+            UriTemplate uriTemplate = new UriTemplate(Endpoints.API_ROOM);
+            Map<String, String> pathVariables = new HashMap<>();
+            pathVariables.put("accommodationId", accommodationId);
+
+            ResponseEntity<List<RoomInfoResponseDto>> response = restTemplate.exchange(
                     uriTemplate.expand(pathVariables),
                     HttpMethod.GET,
                     null,
@@ -41,7 +63,7 @@ public class RoomServiceImp implements RoomService {
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            return Optional.empty();
+            return List.of();
         }
     }
 }

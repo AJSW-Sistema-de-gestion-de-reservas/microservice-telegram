@@ -60,6 +60,15 @@ public class AccommodationDetailsCommandHandler implements CommandHandler {
                 .build();
         messageList.add(accommodationDetailsMessage);
 
+        if (details.getRooms().isEmpty()) {
+            SendMessage emptyMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("El alojamiento no tiene habitaciones disponibles")
+                    .build();
+            messageList.add(emptyMessage);
+            return messageList;
+        }
+
         SendMessage roomsMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text("Las habitaciones disponibles son:")
