@@ -71,12 +71,14 @@ public class RoomServiceImp implements RoomService {
     }
 
     @Override
-    public Optional<RoomInfoResponseDto> getInfo(String accommodationId, String roomId) {
+    public Optional<RoomInfoResponseDto> getByAccommodationAndId(String accommodationId, String roomId) {
         try {
             UriTemplate uriTemplate = new UriTemplate(Endpoints.API_ROOM_BY_ID);
             Map<String, String> pathVariables = new HashMap<>();
             pathVariables.put("accommodationId", accommodationId);
             pathVariables.put("roomId", roomId);
+
+            System.out.println(uriTemplate.expand(pathVariables));
 
             ResponseEntity<RoomInfoResponseDto> response = restTemplate.exchange(
                     uriTemplate.expand(pathVariables),
