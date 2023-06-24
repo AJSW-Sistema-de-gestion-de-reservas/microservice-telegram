@@ -20,9 +20,6 @@ public class BookingInfoResponseDto {
     private String roomName;
     private String roomId;
     private double amount;
-    private boolean paid;
     private Date checkIn;
     private Date checkOut;
-    private Date createdAt;
-    private Date paymentConfirmedAt;
 }

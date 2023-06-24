@@ -62,13 +62,13 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
         bookings.forEach(b -> {
             SendMessage bookingMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("%s - %s\n\nAlojamiento: %s\nHabitación: %s\nEstado: %s"
+                    .text("%s - %s\n\nAlojamiento: %s\nHabitación: %s\nPrecio total: %.2f"
                             .formatted(
                                     formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckIn())),
                                     formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckOut())),
                                     b.getAccommodationName(),
                                     b.getRoomName(),
-                                    (b.isPaid()) ? "Confirmado" : "Pendiente")
+                                    b.getAmount())
                     )
                     .build();
             messageList.add(bookingMessage);
@@ -90,5 +90,5 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
     @Override
     public void removeUserData(long chatId) {
     }
-    
+
 }

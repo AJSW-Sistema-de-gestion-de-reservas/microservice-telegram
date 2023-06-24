@@ -10,7 +10,6 @@ import java.util.Date;
 public class AvailabilityInfoResponseDto {
     private String id;
     private Date date;
-    private double price;
     private int availableQuantity;
     private String accommodationId;
     private String roomId;

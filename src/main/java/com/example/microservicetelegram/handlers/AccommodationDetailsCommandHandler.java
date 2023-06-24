@@ -79,7 +79,13 @@ public class AccommodationDetailsCommandHandler implements CommandHandler {
             SendMessage roomMessage = SendMessage.builder()
                     .chatId(chatId)
                     .parseMode(HTML)
-                    .text("<b>%s</b>\n\nPara realizar una reserva: /reservar_%s_%s".formatted(r.getName(), details.getId(), r.getId()))
+                    .text("""
+                            <b>%s</b>
+                     
+                            Precio por día: $%.2f
+                            Cantidad de personas: %s
+
+                            Para realizar una reserva: /reservar_%s_%s""".formatted(r.getName(), r.getPrice(), r.getMaxPeople(), details.getId(), r.getId()))
                     .build();
             messageList.add(roomMessage);
         });
