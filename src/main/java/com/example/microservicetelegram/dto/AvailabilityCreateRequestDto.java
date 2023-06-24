@@ -9,5 +9,4 @@ import java.util.Date;
 @Data
 public class AvailabilityCreateRequestDto {
     private Date date;
-    private double price;
 }

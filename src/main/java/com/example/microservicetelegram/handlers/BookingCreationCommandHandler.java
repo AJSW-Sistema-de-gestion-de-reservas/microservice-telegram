@@ -1,6 +1,9 @@
 package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.domain.BookingUserData;
+import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
+import com.example.microservicetelegram.dto.RoomInfoResponseDto;
+import com.example.microservicetelegram.services.AccommodationService;
 import com.example.microservicetelegram.services.BookingService;
 import com.example.microservicetelegram.services.ClientService;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class BookingCreationCommandHandler implements CommandHandler {
@@ -25,12 +29,16 @@ public class BookingCreationCommandHandler implements CommandHandler {
     private static final String CALLBACK_DATA_CONFIRM = "Y";
 
     private final ClientService clientService;
+    private final AccommodationService accommodationService;
     private final BookingService bookingService;
 
     private final Map<Long, BookingUserData> bookingUserDataMap;
 
-    public BookingCreationCommandHandler(ClientService clientService, BookingService bookingService) {
+    public BookingCreationCommandHandler(ClientService clientService,
+                                         AccommodationService accommodationService,
+                                         BookingService bookingService) {
         this.clientService = clientService;
+        this.accommodationService = accommodationService;
         this.bookingService = bookingService;
         this.bookingUserDataMap = new HashMap<>();
     }
@@ -171,6 +179,20 @@ public class BookingCreationCommandHandler implements CommandHandler {
 
         userData.setEndDate(endDate);
 
+        Optional<AccommodationDetailsResponseDto> accommodationInfo = accommodationService.getById(userData.getAccommodationId());
+        if (accommodationInfo.isEmpty())
+            return;
+
+        Optional<RoomInfoResponseDto> roomInfo = accommodationInfo.get().getRooms().stream()
+                .filter(r -> Objects.equals(r.getId(), userData.getRoomId()))
+                .findFirst();
+        if (roomInfo.isEmpty())
+            return;
+
+        long datesDiff = userData.getEndDate().getTime() - userData.getStartDate().getTime();
+        long daysDiff = TimeUnit.DAYS.convert(datesDiff, TimeUnit.MILLISECONDS);
+        double total = roomInfo.get().getPrice() * daysDiff;
+
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(InlineKeyboardButton.builder()
@@ -188,9 +210,14 @@ public class BookingCreationCommandHandler implements CommandHandler {
                 .text("""
                         Confirma los datos de la reserva:
                                                 
+                        Precio total: $%.2f
                         Fecha de entrada: %s
                         Fecha de salida: %s
-                        """.formatted(dateFormat.format(userData.getStartDate()), dateFormat.format(userData.getEndDate())))
+                        """
+                        .formatted(
+                                total,
+                                dateFormat.format(userData.getStartDate()),
+                                dateFormat.format(userData.getEndDate())))
                 .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboard).build())
                 .build();
         messageList.add(sendMessage);

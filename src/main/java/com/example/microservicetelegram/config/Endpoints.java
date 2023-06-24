@@ -18,7 +18,7 @@ public class Endpoints {
     public static final String API_ACCOMMODATION_SEARCH_OWNER = API_ACCOMMODATION + "/search/owner={ownerId}";
 
     public static final String API_ROOM = API_ACCOMMODATION_BY_ID + "/room";
-    public static final String API_ROOM_BY_ID = API_ROOM + "/";
+    public static final String API_ROOM_BY_ID = API_ROOM + "/{roomId}";
 
     public static final String API_BOOKING_CREATE = API_BASE_URL + "/accommodation/{accommodationId}/room/{roomId}/booking";
     public static final String API_BOOKING_CLIENT = API_BASE_URL + "/client/{clientId}/booking";

@@ -43,7 +43,8 @@ public class AccommodationOwnerInfoCommandHandler implements CommandHandler {
         if (accommodationsInfo.isEmpty()) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("No tenés alojamientos registrados")
+                    .text("No tenés alojamientos registrados. Podés agregar un nuevo alojamiento con el comando " +
+                            "/crearalojamiento")
                     .build();
             return List.of(sendMessage);
         }
@@ -72,6 +73,12 @@ public class AccommodationOwnerInfoCommandHandler implements CommandHandler {
                     .build();
             messageList.add(sendMessage);
         });
+
+        SendMessage sendMessage = SendMessage.builder()
+                .chatId(chatId)
+                .text("Podés agregar alojamientos con el comando /crearalojamiento")
+                .build();
+        messageList.add(sendMessage);
 
         return messageList;
     }
