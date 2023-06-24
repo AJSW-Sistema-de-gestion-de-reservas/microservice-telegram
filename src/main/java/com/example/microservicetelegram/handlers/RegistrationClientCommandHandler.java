@@ -18,7 +18,7 @@ public class RegistrationClientCommandHandler extends RegistrationCommandHandler
 
     @Override
     boolean isUserRegistered(long chatId) {
-        return clientService.checkUserExists(chatId);
+        return clientService.existsByChatId(chatId);
     }
 
     @Override

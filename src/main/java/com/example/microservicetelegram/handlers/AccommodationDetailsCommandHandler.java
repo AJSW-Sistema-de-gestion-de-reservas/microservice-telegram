@@ -41,7 +41,7 @@ public class AccommodationDetailsCommandHandler implements CommandHandler {
         String text = update.getMessage().getText();
         String accommodationId = text.substring(text.indexOf("_") + 1).trim();
 
-        Optional<AccommodationDetailsResponseDto> result = accommodationService.getBy(accommodationId);
+        Optional<AccommodationDetailsResponseDto> result = accommodationService.getById(accommodationId);
         if (result.isEmpty()) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
@@ -59,6 +59,15 @@ public class AccommodationDetailsCommandHandler implements CommandHandler {
                 .text("<b>%s</b>\n\n%s\n%s, %s".formatted(details.getName(), details.getAddress(), details.getCity(), details.getProvince()))
                 .build();
         messageList.add(accommodationDetailsMessage);
+
+        if (details.getRooms().isEmpty()) {
+            SendMessage emptyMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("El alojamiento no tiene habitaciones disponibles")
+                    .build();
+            messageList.add(emptyMessage);
+            return messageList;
+        }
 
         SendMessage roomsMessage = SendMessage.builder()
                 .chatId(chatId)

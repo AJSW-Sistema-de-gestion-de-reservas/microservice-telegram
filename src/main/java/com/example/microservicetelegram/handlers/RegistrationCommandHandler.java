@@ -16,6 +16,9 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationCommandHandler.class);
 
+    private static final String CALLBACK_DATA_CANCEL = "N";
+    private static final String CALLBACK_DATA_CONFIRM = "Y";
+
     private final Map<Long, RegistrationUserData> registrationUserDataMap;
 
     @Autowired
@@ -110,12 +113,12 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
         List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         InlineKeyboardButton buttonConfirm = InlineKeyboardButton.builder()
-                .text("Confirm")
-                .callbackData("y")
+                .text("Confirmar")
+                .callbackData(CALLBACK_DATA_CONFIRM)
                 .build();
         InlineKeyboardButton buttonCancel = InlineKeyboardButton.builder()
-                .text("Cancel")
-                .callbackData("n")
+                .text("Cancelar")
+                .callbackData(CALLBACK_DATA_CANCEL)
                 .build();
         row.add(buttonCancel);
         row.add(buttonConfirm);
@@ -131,7 +134,7 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
                         Por favor, comprobá que los datos ingresados son correctos:
                                                         
                         Nombre de usuario: %s
-                        Nombre: %s,
+                        Nombre: %s
                         Apellido: %s
                         """.formatted(userData.getUsername(), userData.getFirstName(), userData.getLastName()))
                 .build();
@@ -145,26 +148,19 @@ public abstract class RegistrationCommandHandler implements CommandHandler {
             return;
 
         String callbackData = update.getCallbackQuery().getData();
-        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-        if (Objects.equals(callbackData, "y")) {
+        if (Objects.equals(callbackData, CALLBACK_DATA_CONFIRM)) {
             LOGGER.info(userData.toString());
 
             boolean result = register(chatId, userData);
-            SendMessage sendMessage;
-            if (result) {
-                sendMessage = SendMessage.builder()
-                        .chatId(chatId)
-                        .text("Registro completado!")
-                        .build();
-            } else {
-                sendMessage = SendMessage.builder()
-                        .chatId(chatId)
-                        .text("Ha ocurrido un error")
-                        .build();
-            }
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text((result) ? "Registro completado!" : "Ha ocurrido un error")
+                    .build();
+
             messageList.add(sendMessage);
-        } else {
+        } else if (Objects.equals(callbackData, CALLBACK_DATA_CANCEL)) {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("Registro cancelado.\n\nPodés volver a iniciar el registro con el comando /registro.")
