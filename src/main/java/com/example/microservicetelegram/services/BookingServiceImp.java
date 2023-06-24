@@ -91,6 +91,28 @@ public class BookingServiceImp implements BookingService {
         }
     }
 
+    @Override
+    public List<BookingInfoResponseDto> getAllByAccommodation(String accommodationId) {
+        try {
+            UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_ACCOMMODATION);
+            Map<String, String> pathVariables = new HashMap<>();
+            pathVariables.put("accommodationId", accommodationId);
+
+            ResponseEntity<List<BookingInfoResponseDto>> response = restTemplate.exchange(
+                    uriTemplate.expand(pathVariables),
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
     public List<BookingInfoResponseDto> getAllByAccommodationAndDate(String accommodationId, Date date) {
         try {
             UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_ACCOMMODATION_DATE);

@@ -64,8 +64,10 @@ public class AccommodationOwnerInfoCommandHandler implements CommandHandler {
                             %s
                             %s, %s
 
-                            Podés ver las habitaciones de este alojamiento con el comando /mishabitaciones_%s""")
-                            .formatted(a.getName(), a.getAddress(), a.getCity(), a.getProvince(), a.getId()))
+                            Podés ver las habitaciones de este alojamiento con el comando /mishabitaciones_%s
+
+                            Podés ver las reservas de este alojamiento con el comando /misreservas_%s""")
+                            .formatted(a.getName(), a.getAddress(), a.getCity(), a.getProvince(), a.getId(), a.getId()))
                     .parseMode(HTML)
                     .build();
             messageList.add(sendMessage);

@@ -29,7 +29,8 @@ public class TelegramConfig {
                                             BookingCreationCommandHandler bookingCreation,
                                             AccommodationCreationCommandHandler accommodationCreation,
                                             AccommodationOwnerInfoCommandHandler accommodationOwnerInfo,
-                                            RoomOwnerInfoCommandHandler roomOwnerInfo) {
+                                            RoomOwnerInfoCommandHandler roomOwnerInfo,
+                                            BookingAccommodationOwnerInfoCommandHandler bookingAccommodationOwner) {
         List<CommandHandler> commands = new ArrayList<>();
         commands.add(registrationClient);
         commands.add(registrationOwner);
@@ -41,6 +42,7 @@ public class TelegramConfig {
         commands.add(accommodationCreation);
         commands.add(accommodationOwnerInfo);
         commands.add(roomOwnerInfo);
+        commands.add(bookingAccommodationOwner);
         return commands;
     }
 

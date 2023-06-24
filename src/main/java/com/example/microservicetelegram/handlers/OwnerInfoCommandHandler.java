@@ -26,7 +26,7 @@ public class OwnerInfoCommandHandler implements CommandHandler {
     public List<SendMessage> handle(Update update) {
         if (!update.hasMessage())
             return List.of();
-
+        
         long chatId = update.getMessage().getChatId();
         List<SendMessage> messageList = new ArrayList<>();
 

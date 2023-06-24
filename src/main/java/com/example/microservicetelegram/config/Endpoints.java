@@ -22,6 +22,7 @@ public class Endpoints {
 
     public static final String API_BOOKING_CREATE = API_BASE_URL + "/accommodation/{accommodationId}/room/{roomId}/booking";
     public static final String API_BOOKING_CLIENT = API_BASE_URL + "/client/{clientId}/booking";
+    public static final String API_BOOKING_ACCOMMODATION = API_BASE_URL + "/accommodation/{accommodationId}/booking";
     public static final String API_BOOKING_ACCOMMODATION_DATE = "/accommodation/{accommodationId}/booking/{date}";
     public static final String API_BOOKING_ACCOMMODATION_DATE_BETWEEN = "/accommodation/{accommodationId}/booking/{startDate}/{endDate}";
 }

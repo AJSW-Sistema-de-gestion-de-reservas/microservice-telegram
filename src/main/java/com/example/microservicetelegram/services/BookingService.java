@@ -10,6 +10,8 @@ public interface BookingService {
 
     List<BookingInfoResponseDto> getAllByChatId(long chatId);
 
+    List<BookingInfoResponseDto> getAllByAccommodation(String accommodationId);
+
     List<BookingInfoResponseDto> getAllByAccommodationAndDate(String accommodationId, Date date);
 
     List<BookingInfoResponseDto> getAllByAccommodationAndBetweenDate(String accommodationId, Date startDate, Date endDate);
