@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         String commandText = (text.indexOf(' ') != -1) ? text.substring(0, text.indexOf(' ')) : text;
         Optional<CommandHandler> command = commands.stream()
+                .sorted(Comparator.comparing(c -> {
+                    if (c.canHandle(commandText))
+                        return 0;
+                    else if (c.hasUserData(chatId))
+                        return 1;
+                    else
+                        return 2;
+                }))
                 .filter(c -> c.canHandle(commandText) || c.hasUserData(chatId))
                 .findFirst();
 
