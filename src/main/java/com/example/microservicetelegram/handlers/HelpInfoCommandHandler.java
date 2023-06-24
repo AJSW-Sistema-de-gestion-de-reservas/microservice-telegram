@@ -1,7 +1,6 @@
 package com.example.microservicetelegram.handlers;
 
-import com.example.microservicetelegram.services.BookingService;
-import com.example.microservicetelegram.services.ClientService;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -9,13 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class HelpInfoCommandHandler implements CommandHandler {
-
-    private  final ClientService clientService;
-
-    private HelpInfoCommandHandler(ClientService clientService) {
-        this.clientService = clientService;
-    }
 
     @Override
     public List<SendMessage> handle(Update update) {

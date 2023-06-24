@@ -1,21 +1,15 @@
 package com.example.microservicetelegram.handlers;
 
-import com.example.microservicetelegram.services.ClientService;
+
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+@Component
 public class CancelCommandHandler implements CommandHandler {
-
-    private final ClientService clientService;
-
-    private CancelCommandHandler(ClientService clientService) {
-        this.clientService = clientService;
-    }
-
     @Override
     public List<SendMessage> handle(Update update) {
         if (!update.hasMessage())
@@ -34,7 +28,7 @@ public class CancelCommandHandler implements CommandHandler {
     }
     @Override
     public boolean canHandle(String command) {
-        return Objects.equals(command, "/cancel");
+        return Objects.equals(command, "/cancelar");
     }
 
     @Override
