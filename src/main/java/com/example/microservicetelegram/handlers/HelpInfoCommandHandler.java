@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.telegram.telegrambots.meta.api.methods.ParseMode.MARKDOWN;
+
 @Component
 public class HelpInfoCommandHandler implements CommandHandler {
 
@@ -21,17 +23,22 @@ public class HelpInfoCommandHandler implements CommandHandler {
         List<SendMessage> messageList = new ArrayList<>();
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Lista de comandos:\n " +
-                        "Cliente\n\t" +
-                        "Registrarse: /registro\n\t" +
-                        "Consultar datos: /misdatos\n\t" +
-                        "Buscar alojamiento: /buscar\n\t" +
-                        "Consultar mis reservas: /misreservas\n"+
-                        "Administrador\n\t"+
-                        "Registrarse: /registroadmin\n\t"+
-                        "Consultar datos: /misdatosadmin\n\t"+
-                        "Ver alojamientos propios: /misalojamientos\n\t"+
-                        "Crear un nuevo alojamiento: /crearalojamiento")
+                .text("""
+                        **Lista de comandos**
+                                                 
+                        **Cliente**
+                        - Registrarse: /registro
+                        - Consultar mis datos: /misdatos
+                        - Buscar alojamiento: /buscar
+                        - Consultar mis reservas: /misreservas
+                                                 
+                        **Administrador de alojamientos**
+                        - Registrarse: /registroadmin
+                        - Consultar mis datos: /misdatosadmin
+                        - Ver mis alojamientos: /misalojamientos
+                        - Agregar un nuevo alojamiento: /crearalojamiento
+                        """)
+                .parseMode(MARKDOWN)
                 .build();
         messageList.add(sendMessage);
 
@@ -40,7 +47,9 @@ public class HelpInfoCommandHandler implements CommandHandler {
 
     @Override
     public boolean canHandle(String command) {
-        return Objects.equals(command, "/ayuda");
+        return Objects.equals(command, "/ayuda") ||
+                Objects.equals(command, "/help") ||
+                Objects.equals(command, "/start");
     }
 
     @Override
