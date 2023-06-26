@@ -59,7 +59,7 @@ public class BookingAccommodationOwnerInfoCommandHandler implements CommandHandl
             return List.of(sendMessage);
         }
 
-        List<BookingInfoResponseDto> bookings = bookingService.getAllByAccommodation("647a91d0f9e8e13b7de53946");
+        List<BookingInfoResponseDto> bookings = bookingService.getAllByAccommodation(accommodationId);
 
         if (bookings.isEmpty()) {
             SendMessage sendMessage = SendMessage.builder()
