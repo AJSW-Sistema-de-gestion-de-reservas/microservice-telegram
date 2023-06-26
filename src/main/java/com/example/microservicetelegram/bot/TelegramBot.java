@@ -84,6 +84,16 @@ public class TelegramBot extends TelegramLongPollingBot {
             command.stream()
                     .filter(c -> c != command.get())
                     .forEach(c -> c.removeUserData(chatId));
+        } else {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("No hay ningún comando activo\nPodés ver la lista de comandos con /ayuda")
+                    .build();
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -91,5 +101,5 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotUsername() {
         return botUsername;
     }
-    
+
 }
