@@ -3,6 +3,7 @@ package com.example.microservicetelegram.services;
 import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.ClientCreationRequestDto;
 import com.example.microservicetelegram.dto.ClientInfoResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,8 +20,9 @@ public class ClientServiceImp implements ClientService {
 
     private final RestTemplate restTemplate;
 
-    public ClientServiceImp() {
-        this.restTemplate = new RestTemplate();
+    @Autowired
+    public ClientServiceImp(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override

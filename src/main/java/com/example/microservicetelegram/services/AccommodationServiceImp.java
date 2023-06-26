@@ -5,6 +5,7 @@ import com.example.microservicetelegram.dto.AccommodationCreationWithIdRequestDt
 import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
 import com.example.microservicetelegram.dto.AccommodationInfoResponseDto;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +29,10 @@ public class AccommodationServiceImp implements AccommodationService {
 
     private final RestTemplate restTemplate;
 
-    public AccommodationServiceImp(OwnerService ownerService) {
+    @Autowired
+    public AccommodationServiceImp(OwnerService ownerService, RestTemplate restTemplate) {
         this.ownerService = ownerService;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     @Override

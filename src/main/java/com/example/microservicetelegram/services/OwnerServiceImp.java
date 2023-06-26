@@ -3,6 +3,7 @@ package com.example.microservicetelegram.services;
 import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.OwnerCreationRequestDto;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,8 +20,9 @@ public class OwnerServiceImp implements OwnerService {
 
     private final RestTemplate restTemplate;
 
-    public OwnerServiceImp() {
-        this.restTemplate = new RestTemplate();
+    @Autowired
+    public OwnerServiceImp(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override

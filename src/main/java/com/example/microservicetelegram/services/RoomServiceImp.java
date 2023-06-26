@@ -4,6 +4,7 @@ import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
 import com.example.microservicetelegram.dto.RoomCreationRequestDto;
 import com.example.microservicetelegram.dto.RoomInfoResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +27,10 @@ public class RoomServiceImp implements RoomService {
 
     private final RestTemplate restTemplate;
 
-    public RoomServiceImp(OwnerService ownerService) {
+    @Autowired
+    public RoomServiceImp(OwnerService ownerService, RestTemplate restTemplate) {
         this.ownerService = ownerService;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     @Override

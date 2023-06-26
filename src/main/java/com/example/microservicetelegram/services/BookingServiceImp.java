@@ -4,6 +4,7 @@ import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.BookingCreationRequestDto;
 import com.example.microservicetelegram.dto.BookingInfoResponseDto;
 import com.example.microservicetelegram.dto.ClientInfoResponseDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,9 +24,10 @@ public class BookingServiceImp implements BookingService {
     private final ClientService clientService;
     private final RestTemplate restTemplate;
 
-    public BookingServiceImp(ClientService clientService) {
+    @Autowired
+    public BookingServiceImp(ClientService clientService, RestTemplate restTemplate) {
         this.clientService = clientService;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
 
     @Override
