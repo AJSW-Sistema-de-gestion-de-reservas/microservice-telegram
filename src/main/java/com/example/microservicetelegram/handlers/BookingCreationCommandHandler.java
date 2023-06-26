@@ -130,7 +130,17 @@ public class BookingCreationCommandHandler implements CommandHandler {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("No se ingresó una fecha de entrada válida. Intente ingresar nuevamente una fecha de " +
-                            "entrada en formato dd/MM/yyyy")
+                            "entrada en formato dd/MM/yyyy:")
+                    .build();
+            messageList.add(sendMessage);
+            return;
+        }
+
+        if (startDate.before(new Date())) {
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("La fecha de entrada no puede ser anterior al día de hoy. Intente ingresar nuevamente una " +
+                            "fecha de entrada en formato dd/MM/yyyy:")
                     .build();
             messageList.add(sendMessage);
             return;
@@ -164,7 +174,7 @@ public class BookingCreationCommandHandler implements CommandHandler {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("No se ingresó una fecha de salida válida. Intente ingresar nuevamente una fecha de " +
-                            "salida en formato dd/MM/yyyy")
+                            "salida en formato dd/MM/yyyy:")
                     .build();
             messageList.add(sendMessage);
             return;
@@ -174,7 +184,7 @@ public class BookingCreationCommandHandler implements CommandHandler {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
                     .text("La fecha de salida no puede ser anterior a la fecha de entrada. Intente ingresar " +
-                            "nuevamente una fecha de salida en formato dd/MM/yyyy")
+                            "nuevamente una fecha de salida en formato dd/MM/yyyy:")
                     .build();
             messageList.add(sendMessage);
             return;
@@ -193,7 +203,7 @@ public class BookingCreationCommandHandler implements CommandHandler {
             return;
 
         long datesDiff = userData.getEndDate().getTime() - userData.getStartDate().getTime();
-        long daysDiff = TimeUnit.DAYS.convert(datesDiff, TimeUnit.MILLISECONDS);
+        long daysDiff = TimeUnit.DAYS.convert(datesDiff, TimeUnit.MILLISECONDS) + 1;
         double total = roomInfo.get().getPrice() * daysDiff;
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
