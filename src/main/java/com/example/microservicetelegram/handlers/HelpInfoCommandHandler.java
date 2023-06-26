@@ -37,6 +37,10 @@ public class HelpInfoCommandHandler implements CommandHandler {
                         - Consultar mis datos: /misdatosadmin
                         - Ver mis alojamientos: /misalojamientos
                         - Agregar un nuevo alojamiento: /crearalojamiento
+                                                
+                        **Otros**
+                        - Cancelar el comando en curso: /cancelar
+                        - Ver la lista de comandos disponibles: /ayuda
                         """)
                 .parseMode(MARKDOWN)
                 .build();
