@@ -62,7 +62,7 @@ public class BookingClientInfoCommandHandler implements CommandHandler {
         bookings.forEach(b -> {
             SendMessage bookingMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("%s - %s\n\nAlojamiento: %s\nHabitación: %s\nPrecio total: %.2f"
+                    .text("%s - %s\n\nAlojamiento: %s\nHabitación: %s\nPrecio total: $%.2f"
                             .formatted(
                                     formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckIn())),
                                     formatter.format(TimeUtils.convertInstantDateToUTC(b.getCheckOut())),

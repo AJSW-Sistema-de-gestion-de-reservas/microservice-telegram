@@ -87,7 +87,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else {
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text("No hay ningún comando activo\nPodés ver la lista de comandos con /ayuda")
+                    .text("No hay ningún comando activo. Podés ver la lista de comandos disponibles con /ayuda")
                     .build();
             try {
                 execute(sendMessage);
