@@ -1,6 +1,9 @@
 package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.domain.AccommodationUserData;
+import com.example.microservicetelegram.exception.AccommodationConflictException;
+import com.example.microservicetelegram.exception.AccommodationServiceException;
+import com.example.microservicetelegram.exception.OwnerNotFoundException;
 import com.example.microservicetelegram.services.AccommodationService;
 import com.example.microservicetelegram.services.OwnerService;
 import org.slf4j.Logger;
@@ -75,8 +78,10 @@ public class AccommodationCreationCommandHandler implements CommandHandler {
         long chatId = update.getMessage().getChatId();
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text("Comenzando con la creación de un alojamiento.\n\n" +
-                        "Por favor, ingrese el nombre del alojamiento:")
+                .text("""
+                        Comenzando con la creación de un alojamiento.
+
+                        Por favor, ingrese el nombre del alojamiento:""")
                 .build();
         messageList.add(sendMessage);
 
@@ -200,19 +205,29 @@ public class AccommodationCreationCommandHandler implements CommandHandler {
         if (Objects.equals(callbackData, CALLBACK_DATA_CONFIRM)) {
             LOGGER.info(userData.toString());
 
-            boolean result = accommodationService.create(
-                    chatId,
-                    userData.getName(),
-                    userData.getAddress(),
-                    userData.getCity(),
-                    userData.getProvince(),
-                    userData.getPostalCode()
-            );
+            String messageText;
+            try {
+                accommodationService.create(
+                        chatId,
+                        userData.getName(),
+                        userData.getAddress(),
+                        userData.getCity(),
+                        userData.getProvince(),
+                        userData.getPostalCode()
+                );
+                messageText = "Alojamiento creado con éxito! Podés ver tus alojamientos con el comando " +
+                        "/misalojamientos";
+            } catch (AccommodationConflictException e) {
+                messageText = "Ya existe un alojamiento con el mismo nombre, no se pudo crear el alojamiento";
+            } catch (AccommodationServiceException e) {
+                messageText = "Ha ocurrido un error al intentar crear el alojamiento";
+            } catch (OwnerNotFoundException e) {
+                messageText = "No se pudo crear el alojamiento porque no se encontraron los datos del administrador";
+            }
 
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text((result) ? "Alojamiento creado con éxito! Podés ver tus alojamientos con el comando " +
-                            "/misalojamientos" : "Ha ocurrido un error al crear el alojamiento")
+                    .text(messageText)
                     .build();
             messageList.add(sendMessage);
         } else if (Objects.equals(callbackData, CALLBACK_DATA_CANCEL)) {

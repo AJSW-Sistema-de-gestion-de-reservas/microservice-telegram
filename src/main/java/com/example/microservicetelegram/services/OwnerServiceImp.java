@@ -3,14 +3,14 @@ package com.example.microservicetelegram.services;
 import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.OwnerCreationRequestDto;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
+import com.example.microservicetelegram.exception.OwnerConflictException;
+import com.example.microservicetelegram.exception.OwnerServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -26,7 +26,8 @@ public class OwnerServiceImp implements OwnerService {
     }
 
     @Override
-    public boolean register(long chatId, String username, String firstName, String lastName) {
+    public void register(long chatId, String username, String firstName, String lastName)
+            throws OwnerConflictException, OwnerServiceException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
@@ -40,18 +41,20 @@ public class OwnerServiceImp implements OwnerService {
         HttpEntity<OwnerCreationRequestDto> entity = new HttpEntity<>(requestDto, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange(
+            restTemplate.exchange(
                     Endpoints.API_OWNER_REGISTER,
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<>() {
                     }
             );
-
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
-            return false;
+
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
+                throw new OwnerConflictException();
+            else if (e.getStatusCode().is4xxClientError() || e.getStatusCode().is5xxServerError())
+                throw new OwnerServiceException();
         }
     }
 
@@ -67,7 +70,8 @@ public class OwnerServiceImp implements OwnerService {
             );
 
             return Optional.ofNullable(response.getBody());
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -83,7 +87,7 @@ public class OwnerServiceImp implements OwnerService {
             );
 
             return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             return false;
         }
     }

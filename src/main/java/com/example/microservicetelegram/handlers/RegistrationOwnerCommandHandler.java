@@ -23,7 +23,12 @@ public class RegistrationOwnerCommandHandler extends RegistrationCommandHandler 
 
     @Override
     boolean register(long chatId, RegistrationUserData userData) {
-        return ownerService.register(chatId, userData.getUsername(), userData.getFirstName(), userData.getLastName());
+        try {
+            ownerService.register(chatId, userData.getUsername(), userData.getFirstName(), userData.getLastName());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

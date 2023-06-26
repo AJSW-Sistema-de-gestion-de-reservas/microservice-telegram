@@ -4,14 +4,13 @@ import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.BookingCreationRequestDto;
 import com.example.microservicetelegram.dto.BookingInfoResponseDto;
 import com.example.microservicetelegram.dto.ClientInfoResponseDto;
+import com.example.microservicetelegram.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -31,11 +30,12 @@ public class BookingServiceImp implements BookingService {
     }
 
     @Override
-    public boolean book(long chatId, String accommodationId, String roomId, Date checkIn, Date checkOut) {
+    public void book(long chatId, String accommodationId, String roomId, Date checkIn, Date checkOut)
+            throws AccommodationConflictException, AccommodationServiceException, ClientNotFoundException {
         try {
             Optional<ClientInfoResponseDto> clientInfo = clientService.getInfo(chatId);
             if (clientInfo.isEmpty())
-                return false;
+                throw new ClientNotFoundException();
 
             UriTemplate uriTemplate = new UriTemplate(Endpoints.API_BOOKING_CREATE);
             Map<String, String> pathVariables = new HashMap<>();
@@ -53,18 +53,20 @@ public class BookingServiceImp implements BookingService {
 
             HttpEntity<BookingCreationRequestDto> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(
+            restTemplate.exchange(
                     uriTemplate.expand(pathVariables),
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<>() {
                     }
             );
-
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
-            return false;
+
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
+                throw new BookingConflictException();
+            else if (e.getStatusCode().is4xxClientError() || e.getStatusCode().is5xxServerError())
+                throw new BookingServiceException();
         }
     }
 
@@ -88,7 +90,8 @@ public class BookingServiceImp implements BookingService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return List.of();
         }
     }
@@ -109,7 +112,7 @@ public class BookingServiceImp implements BookingService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
             return List.of();
         }
@@ -131,7 +134,8 @@ public class BookingServiceImp implements BookingService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return List.of();
         }
     }
@@ -153,7 +157,8 @@ public class BookingServiceImp implements BookingService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return List.of();
         }
     }

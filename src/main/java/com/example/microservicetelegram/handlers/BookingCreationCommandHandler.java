@@ -3,6 +3,9 @@ package com.example.microservicetelegram.handlers;
 import com.example.microservicetelegram.domain.BookingUserData;
 import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
 import com.example.microservicetelegram.dto.RoomInfoResponseDto;
+import com.example.microservicetelegram.exception.BookingConflictException;
+import com.example.microservicetelegram.exception.BookingServiceException;
+import com.example.microservicetelegram.exception.ClientNotFoundException;
 import com.example.microservicetelegram.services.AccommodationService;
 import com.example.microservicetelegram.services.BookingService;
 import com.example.microservicetelegram.services.ClientService;
@@ -235,17 +238,27 @@ public class BookingCreationCommandHandler implements CommandHandler {
         if (Objects.equals(callbackData, CALLBACK_DATA_CONFIRM)) {
             LOGGER.info(userData.toString());
 
-            boolean result = bookingService.book(
-                    chatId,
-                    userData.getAccommodationId(),
-                    userData.getRoomId(),
-                    userData.getStartDate(),
-                    userData.getEndDate()
-            );
+            String messageText;
+            try {
+                bookingService.book(
+                        chatId,
+                        userData.getAccommodationId(),
+                        userData.getRoomId(),
+                        userData.getStartDate(),
+                        userData.getEndDate()
+                );
+                messageText = "Reserva registrada con éxito!";
+            } catch (BookingConflictException e) {
+                messageText = "No hay disponibilidad para esa habitación entre las fechas seleccionadas";
+            } catch (BookingServiceException e) {
+                messageText = "Ha ocurrido un error al intentar registrar la reserva";
+            } catch (ClientNotFoundException e) {
+                messageText = "No se pudo completar la reserva, no se encontraron los datos del cliente";
+            }
 
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text((result) ? "Reserva completada con éxito!" : "Ha ocurrido un error en la reserva")
+                    .text(messageText)
                     .build();
 
             messageList.add(sendMessage);

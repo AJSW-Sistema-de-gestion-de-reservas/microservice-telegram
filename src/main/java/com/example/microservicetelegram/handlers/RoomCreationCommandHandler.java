@@ -2,6 +2,9 @@ package com.example.microservicetelegram.handlers;
 
 import com.example.microservicetelegram.domain.RoomUserData;
 import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
+import com.example.microservicetelegram.exception.OwnerNotFoundException;
+import com.example.microservicetelegram.exception.RoomConflictException;
+import com.example.microservicetelegram.exception.RoomServiceException;
 import com.example.microservicetelegram.services.AccommodationService;
 import com.example.microservicetelegram.services.OwnerService;
 import com.example.microservicetelegram.services.RoomService;
@@ -237,20 +240,30 @@ public class RoomCreationCommandHandler implements CommandHandler {
         if (Objects.equals(callbackData, CALLBACK_DATA_CONFIRM)) {
             LOGGER.info(userData.toString());
 
-            boolean result = roomService.create(
-                    chatId,
-                    userData.getAccommodationId(),
-                    userData.getName(),
-                    userData.getMaxPeople(),
-                    userData.getQuantity(),
-                    userData.getPrice()
-            );
+            String messageText;
+            try {
+                roomService.create(
+                        chatId,
+                        userData.getAccommodationId(),
+                        userData.getName(),
+                        userData.getMaxPeople(),
+                        userData.getQuantity(),
+                        userData.getPrice()
+                );
+                messageText = "Habitación creada con éxito! Podés ver todas las habitaciones de este " +
+                        "alojamiento con el comando /mishabitaciones_%s".formatted(userData.getAccommodationId());
+            } catch (RoomConflictException e) {
+                messageText = "Ya existe una habitación con ese nombre, no se pudo registrar la habitación";
+            } catch (RoomServiceException e) {
+                messageText = "Ha ocurrido un error al intentar registrar la habitación";
+            } catch (OwnerNotFoundException e) {
+                messageText = "No se pudo completar el registro de la habitación, no se encontraron los datos del " +
+                        "administrador";
+            }
 
             SendMessage sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text((result) ? "Habitación creada con éxito! Podés ver todas las habitaciones de este " +
-                            "alojamiento con el comando /mishabitaciones_%s".formatted(userData.getAccommodationId())
-                            : "Ha ocurrido un error al crear la habitación")
+                    .text(messageText)
                     .build();
             messageList.add(sendMessage);
         } else if (Objects.equals(callbackData, CALLBACK_DATA_CANCEL)) {

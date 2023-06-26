@@ -5,14 +5,15 @@ import com.example.microservicetelegram.dto.AccommodationCreationWithIdRequestDt
 import com.example.microservicetelegram.dto.AccommodationDetailsResponseDto;
 import com.example.microservicetelegram.dto.AccommodationInfoResponseDto;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
+import com.example.microservicetelegram.exception.AccommodationConflictException;
+import com.example.microservicetelegram.exception.AccommodationServiceException;
+import com.example.microservicetelegram.exception.OwnerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
@@ -36,11 +37,12 @@ public class AccommodationServiceImp implements AccommodationService {
     }
 
     @Override
-    public boolean create(long chatId, String name, String address, String city, String province, String postalCode) {
+    public void create(long chatId, String name, String address, String city, String province, String postalCode)
+            throws AccommodationConflictException, AccommodationServiceException, OwnerNotFoundException {
         try {
             Optional<OwnerInfoResponseDto> ownerInfo = ownerService.getInfo(chatId);
             if (ownerInfo.isEmpty())
-                return false;
+                throw new OwnerNotFoundException();
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Content-Type", "application/json");
@@ -56,18 +58,23 @@ public class AccommodationServiceImp implements AccommodationService {
 
             HttpEntity<AccommodationCreationWithIdRequestDto> entity = new HttpEntity<>(request, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(
+            restTemplate.exchange(
                     Endpoints.API_ACCOMMODATION_CREATE,
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<>() {
                     }
             );
-
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
-            return false;
+
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
+                throw new AccommodationConflictException();
+            else if (e.getStatusCode().is4xxClientError()) {
+                throw new AccommodationServiceException();
+            } else if (e.getStatusCode().is5xxServerError()) {
+                throw new AccommodationServiceException();
+            }
         }
     }
 
@@ -92,7 +99,8 @@ public class AccommodationServiceImp implements AccommodationService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return List.of();
         }
     }
@@ -117,7 +125,7 @@ public class AccommodationServiceImp implements AccommodationService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
             return List.of();
         }
@@ -140,7 +148,8 @@ public class AccommodationServiceImp implements AccommodationService {
             );
 
             return Optional.ofNullable(response.getBody());
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

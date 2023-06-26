@@ -4,14 +4,15 @@ import com.example.microservicetelegram.config.Endpoints;
 import com.example.microservicetelegram.dto.OwnerInfoResponseDto;
 import com.example.microservicetelegram.dto.RoomCreationRequestDto;
 import com.example.microservicetelegram.dto.RoomInfoResponseDto;
+import com.example.microservicetelegram.exception.OwnerNotFoundException;
+import com.example.microservicetelegram.exception.RoomConflictException;
+import com.example.microservicetelegram.exception.RoomServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -34,12 +35,12 @@ public class RoomServiceImp implements RoomService {
     }
 
     @Override
-    public boolean create(long chatId, String accommodationId, String name, int maxPeople, int quantity, double price) {
+    public void create(long chatId, String accommodationId, String name, int maxPeople, int quantity, double price)
+            throws RoomConflictException, RoomServiceException, OwnerNotFoundException {
         try {
             Optional<OwnerInfoResponseDto> ownerInfo = ownerService.getInfo(chatId);
             if (ownerInfo.isEmpty())
-                return false;
-
+                throw new OwnerNotFoundException();
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Content-Type", "application/json");
@@ -57,18 +58,20 @@ public class RoomServiceImp implements RoomService {
             Map<String, String> pathVariables = new HashMap<>();
             pathVariables.put("accommodationId", accommodationId);
 
-            ResponseEntity<String> response = restTemplate.exchange(
+            restTemplate.exchange(
                     uriTemplate.expand(pathVariables),
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<>() {
                     }
             );
-
-            return response.getStatusCode().is2xxSuccessful();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             e.printStackTrace();
-            return false;
+
+            if (e.getStatusCode() == HttpStatus.CONFLICT)
+                throw new RoomConflictException();
+            else if (e.getStatusCode().is4xxClientError() || e.getStatusCode().is5xxServerError())
+                throw new RoomServiceException();
         }
     }
 
@@ -91,7 +94,7 @@ public class RoomServiceImp implements RoomService {
             );
 
             return Optional.ofNullable(response.getBody());
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             return Optional.empty();
         }
     }
@@ -112,7 +115,7 @@ public class RoomServiceImp implements RoomService {
             );
 
             return response.getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             return List.of();
         }
     }
